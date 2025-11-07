@@ -21,10 +21,5 @@ def shingler(text, k):
 
     return set(shingled_set)
 
-# This function creates the 'vocab' by putting every shingle together. This will be a union of all the shingled sets. 
-
-def vocab_builder(*sets):
-    return set.union(*sets)
-
 
 
