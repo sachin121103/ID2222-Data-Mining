@@ -26,19 +26,5 @@ def shingler(text, k):
 def vocab_builder(*sets):
     return set.union(*sets)
 
-# This function creates a sparse vector that contains 1s if the shingle from the set is in vocab. Else, it has a 0
-
-def one_hot_encoding(shingles, vocab):
-    vocab = sorted(list(vocab))
-
-    vectors = []
-    for v in vocab:
-        if v in shingles:
-            vectors.append(1)
-        else:
-            vectors.append(0)
-
-    return vectors
-
 
 
