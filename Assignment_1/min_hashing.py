@@ -10,13 +10,13 @@ def shingle_hasher(shingled_set):
 
     return hashed_set
 
-def value_gen(len):
+def value_gen(length):
     a_list = []
     b_list = []
     random.seed(42)
-    for _ in range(len):
-        a_list.append(random.randint(1, large_prime))
-        b_list.append(random.randint(0, large_prime))
+    for _ in range(length):
+        a_list.append(random.randint(1, large_prime-1))
+        b_list.append(random.randint(0, large_prime-1))
     
     return a_list, b_list
 
@@ -39,6 +39,8 @@ def minhash(hashed_set, a_list, b_list, num_hashes=100):
 
         if minimum_hash != float('inf'):
             signature.append(minimum_hash)
+        else:
+            signature.append(0)
 
     return signature
 
