@@ -1,11 +1,3 @@
-test_1 = "The quick fox, jumped, over the: lazy dog"
-test_2 = "Flying fish flew past the space station"
-test_3 = "we will not allow you to bring your pet armadillo along"
-test_4 = "he figured a few sticks of dynamite were easier than a fishing pole to catch fish"
-short_test_1 = "Hello"
-short_test_2 = "There"
-short_test_3 = "Goodbye"
-
 # This function removes pertinent punctuation from the text
 def strip_punctuation(text):
     punctuation =  '.,!?:-;"' + "'"

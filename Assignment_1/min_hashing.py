@@ -43,15 +43,3 @@ def minhash(hashed_set, a_list, b_list, num_hashes=100):
             signature.append(0)
 
     return signature
-
-
-
-
-
-        
-
-
-short_test_1 = "Hello"
-short_test_result = shingling.shingler(short_test_1, 2)
-
-print(shingle_hasher(short_test_result))
