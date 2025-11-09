@@ -1,4 +1,3 @@
-import shingling
 import random
 
 large_prime = 2**31-1
