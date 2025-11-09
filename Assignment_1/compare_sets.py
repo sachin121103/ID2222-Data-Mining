@@ -10,6 +10,10 @@ def compare_sets (set1, set2):
 
     #intersection of two sets 
 
+    if len(union):
+        return 1.0
+    #If empty sets, then return 1 directly instead of dividing by 0
+
     jaccard_similairity = len(intersection)/len(union)
 
     return jaccard_similairity
