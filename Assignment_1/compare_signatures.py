@@ -1,15 +1,9 @@
-import numpy 
-
-
 def getSimilarity(list1, list2):
-
-    array_1 = numpy.asarray(list1)
-    array_2 = numpy.asarray(list2)
-
-    similiarity = (array_1 == array_2).mean()
-
-    return similiarity
-
-
-
+      
+    matches = 0
+    for i in range(len(list1)):
+        if list1[i] == list2[i]:
+            matches += 1
     
+    similarity = matches / len(list1)
+    return similarity
