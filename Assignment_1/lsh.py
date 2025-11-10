@@ -38,7 +38,6 @@ def lsh(signatures, b, r):
                 buckets[band_hash_key] = set()
             buckets[band_hash_key].add(doc_id)
 
-    # --- Collect Candidate Pairs ---
     
     # We use a set to store unique pairs
     candidate_pairs = set()
@@ -48,7 +47,6 @@ def lsh(signatures, b, r):
         # If a bucket has 2 or more items, they are candidates
         if len(bucket) > 1:
             # 'combinations' creates all unique pairs from the set
-            # e.g., combinations({1, 2, 3}, 2) -> (1,2), (1,3), (2,3)
             for pair in combinations(bucket, 2):
                 # We use frozenset to make the pair order-independent
                 # (doc1, doc2) is the same as (doc2, doc1)
