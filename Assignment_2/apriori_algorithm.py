@@ -1,10 +1,10 @@
 import itertools
 import math 
 
-def first_pass_pruning(dataset, min_support):
-   
+def first_pass_pruning(dataset):
+    global MIN_SUPPORT
     item_counts = {} 
-    min_support_value = len(dataset) * min_support
+    min_support_count = math.ceil(MIN_SUPPORT * len(dataset))
     # Pass 1: Count support for each individual item
     for transaction in dataset:
         for item in transaction:
@@ -13,17 +13,17 @@ def first_pass_pruning(dataset, min_support):
     l1 = set()
     # Prune: Keep only items that meet the minimum support
     for item, count in item_counts.items():
-        if count >= min_support_value:
+        if count >= min_support_count:
             # Add the item as a frozenset (a 1-itemset) to our L1 set
             l1.add(frozenset([item]))
             
     return l1
 
 
-def prune_candidates(dataset, candidate_sets, min_support):
-
+def prune_candidates(dataset, candidate_sets):
+    global MIN_SUPPORT
     itemset_counts = {}
-    min_support_value = len(dataset) * min_support
+    min_support_count = math.ceil(MIN_SUPPORT * len(dataset))
     # Convert dataset to a list of sets for efficient subset checking
     dataset_sets = [set(transaction) for transaction in dataset]
 
@@ -35,7 +35,7 @@ def prune_candidates(dataset, candidate_sets, min_support):
     
     lk = set()
     for itemset, count in itemset_counts.items():
-        if count >= min_support_value:
+        if count >= min_support_count:
             lk.add(itemset)
             
     return lk
