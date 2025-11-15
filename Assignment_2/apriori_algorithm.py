@@ -1,9 +1,6 @@
 import data_parser
 from collections import Counter
 from itertools import combinations
-import time
-
-start = time.time()
 
 def get_frequent_singletons(data, s):
     all_items = []
@@ -21,19 +18,18 @@ def get_frequent_singletons(data, s):
     
     return frequent_singletons
 
-
-def get_frequent_doubletons(singleton, data, s):
+def get_frequent_k_itemsets(previous_k_ton, transaction, support, k):
     frequent_items = set()
-    for itemset in singleton.keys():
-        item = list(itemset)[0]
-        frequent_items.add(item)
+    for itemset in previous_k_ton.keys():
+        for item in itemset:
+            frequent_items.add(item)
     
     candidate_counts = {}
     
-    for transaction in data:
-        relevant_items = transaction & frequent_items
+    for t in transaction:
+        relevant_items = t & frequent_items
         
-        for pair in combinations(relevant_items, 2):
+        for pair in combinations(relevant_items, k):
             candidate = frozenset(pair)
             
             if candidate in candidate_counts:
@@ -41,20 +37,16 @@ def get_frequent_doubletons(singleton, data, s):
             else:
                 candidate_counts[candidate] = 1
     
-    frequent_doubletons = {}
+    frequent_k_tons = {}
     for candidate, count in candidate_counts.items():
-        if count >= s:
-            frequent_doubletons[candidate] = count
+        if count >= support:
+            frequent_k_tons[candidate] = count
     
-    return frequent_doubletons
-
+    return frequent_k_tons    
 
 support = 1000
 transactions = data_parser.data_parser(data_parser.data_file)
 singletons = get_frequent_singletons(transactions, support)
-doubletons = get_frequent_doubletons(singletons, transactions, support)
-print(len(doubletons))
-
-total = time.time() - start
-
-print(f"Time taken: {total: 2f} seconds")
+doubletons = get_frequent_k_itemsets(singletons, transactions, support, 2)
+tripletons = get_frequent_k_itemsets(doubletons, transactions, support, 3)
+print(len(tripletons))
