@@ -1,69 +1,60 @@
-import itertools
-import math 
+import data_parser
+from collections import Counter
+from itertools import combinations
+import time
 
-def first_pass_pruning(dataset):
-    global MIN_SUPPORT
-    item_counts = {} 
-    min_support_count = math.ceil(MIN_SUPPORT * len(dataset))
-    # Pass 1: Count support for each individual item
-    for transaction in dataset:
-        for item in transaction:
-            item_counts[item] = item_counts.get(item, 0) + 1
+start = time.time()
 
-    l1 = set()
-    # Prune: Keep only items that meet the minimum support
-    for item, count in item_counts.items():
-        if count >= min_support_count:
-            # Add the item as a frozenset (a 1-itemset) to our L1 set
-            l1.add(frozenset([item]))
-            
-    return l1
-
-
-def prune_candidates(dataset, candidate_sets):
-    global MIN_SUPPORT
-    itemset_counts = {}
-    min_support_count = math.ceil(MIN_SUPPORT * len(dataset))
-    # Convert dataset to a list of sets for efficient subset checking
-    dataset_sets = [set(transaction) for transaction in dataset]
-
-    for transaction_set in dataset_sets:
-        for candidate in candidate_sets:
-            # Check if the candidate (a frozenset) is a subset of the transaction
-            if candidate.issubset(transaction_set):
-                itemset_counts[candidate] = itemset_counts.get(candidate, 0) + 1
+def get_frequent_singletons(data, s):
+    all_items = []
+    for d in data:
+        for item in d:
+            all_items.append(item)
     
-    lk = set()
-    for itemset, count in itemset_counts.items():
-        if count >= min_support_count:
-            lk.add(itemset)
-            
-    return lk
-
-
-def generate_candidates(lk, k):
-
-    ck_plus_1 = set()
+    item_count = Counter(all_items)
+    frequent_singletons = {}
     
-    # 1. Join Step
-    for itemset1 in lk:
-        for itemset2 in lk:
-            if itemset1 != itemset2:
-                # Join two k-itemsets if their union is of size k+1
-                union_set = itemset1.union(itemset2)
-                
-                if len(union_set) == k + 1:
-                    # 2. Prune Step (Apriori Property)
-                    # Check if all k-subsets of this candidate are also in Lk.
-                    has_infrequent_subset = False
-                    
-                    # Get all subsets of size k
-                    for subset in itertools.combinations(union_set, k):
-                        if frozenset(subset) not in lk:
-                            has_infrequent_subset = True
-                            break # No need to check other subsets
-                    
-                    if not has_infrequent_subset:
-                        ck_plus_1.add(union_set)
-                        
-    return ck_plus_1
+    for item, count in item_count.items():
+        if count >= s:
+            itemset = frozenset({item})
+            frequent_singletons[itemset] = count
+    
+    return frequent_singletons
+
+
+def get_frequent_doubletons(singleton, data, s):
+    frequent_items = set()
+    for itemset in singleton.keys():
+        item = list(itemset)[0]
+        frequent_items.add(item)
+    
+    candidate_counts = {}
+    
+    for transaction in data:
+        relevant_items = transaction & frequent_items
+        
+        for pair in combinations(relevant_items, 2):
+            candidate = frozenset(pair)
+            
+            if candidate in candidate_counts:
+                candidate_counts[candidate] += 1
+            else:
+                candidate_counts[candidate] = 1
+    
+    frequent_doubletons = {}
+    for candidate, count in candidate_counts.items():
+        if count >= s:
+            frequent_doubletons[candidate] = count
+    
+    return frequent_doubletons
+
+
+support = 1000
+transactions = data_parser.data_parser(data_parser.data_file)
+singletons = get_frequent_singletons(transactions, support)
+doubletons = get_frequent_doubletons(singletons, transactions, support)
+print(len(doubletons))
+
+total = time.time() - start
+
+print(f"Time taken: {total: 2f} seconds")
