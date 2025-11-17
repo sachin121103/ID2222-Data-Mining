@@ -1,4 +1,3 @@
-import data_parser
 from collections import Counter
 from itertools import combinations
 
@@ -43,10 +42,3 @@ def get_frequent_k_itemsets(previous_k_ton, transaction, support, k):
             frequent_k_tons[candidate] = count
     
     return frequent_k_tons    
-
-support = 1000
-transactions = data_parser.data_parser(data_parser.data_file)
-singletons = get_frequent_singletons(transactions, support)
-doubletons = get_frequent_k_itemsets(singletons, transactions, support, 2)
-tripletons = get_frequent_k_itemsets(doubletons, transactions, support, 3)
-print(len(tripletons))
