@@ -1,7 +1,7 @@
 from collections import Counter
 from itertools import combinations
 
-def get_frequent_singletons(data, s):
+def get_frequent_singletons(data, support):
     all_items = []
     for d in data:
         for item in d:
@@ -11,7 +11,7 @@ def get_frequent_singletons(data, s):
     frequent_singletons = {}
     
     for item, count in item_count.items():
-        if count >= s:
+        if count >= support:
             itemset = frozenset({item})
             frequent_singletons[itemset] = count
     
