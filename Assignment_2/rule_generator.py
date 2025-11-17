@@ -1,4 +1,3 @@
-import itertools
 from itertools import combinations 
 def generate_association_rules(all_frequent_itemsets, min_confidence):
    
