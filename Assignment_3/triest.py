@@ -1,16 +1,12 @@
 import random
 from collections import defaultdict
 
-
 class TriestBase:
     
-    
-
     def __init__(self, M):
         self.M = M                      # sample size
         self.t = 0                      # processed edges
         self.S = set()                  # sampled edges
-
         self.neighbors = defaultdict(set)
 
         self.tau_global = 0             # global triangle count estimator
@@ -20,8 +16,8 @@ class TriestBase:
     # Utility functions
     # ----------------------------------------------------------
 
-    @staticmethod
-    def normalize(u, v):
+    def normalize(self, u, v):
+        """Normalize edge to ensure consistent representation (u < v)"""
         return (u, v) if u < v else (v, u)
 
     def add_to_sample(self, edge):
@@ -50,12 +46,12 @@ class TriestBase:
 
         sign = +1 if op == "+" else -1
 
+        # Each triangle (u,v,c) should be counted exactly once
         for c in shared:
             self.tau_global += sign
+            self.tau_local[u] += sign
+            self.tau_local[v] += sign  
             self.tau_local[c] += sign
-
-        self.tau_local[u] += sign * len(shared)
-        self.tau_local[v] += sign * len(shared)
 
     # ----------------------------------------------------------
     # Reservoir Sampling Rule
@@ -67,9 +63,13 @@ class TriestBase:
 
         # keep edge w.p. M / t
         if random.random() < self.M / self.t:
+            # Remove a random edge BEFORE adding the new one
             removed = random.choice(tuple(self.S))
+            
+            # Update counters for removal BEFORE actually removing
             self.update_counters("-", removed)
             self.remove_from_sample(removed)
+            
             return True
 
         return False
@@ -84,13 +84,12 @@ class TriestBase:
         """
         self.t += 1
 
-        u, v = self.normalize(*edge)
-        e = (u, v)
+        u, v = edge
+        e = self.normalize(u, v)  # Using instance method
 
         if self.sample_edge(e):
-            # update counters for new edge
-            self.update_counters("+", e)
             self.add_to_sample(e)
+            self.update_counters("+", e)
 
     # ----------------------------------------------------------
     # Return estimate
@@ -108,3 +107,11 @@ class TriestBase:
 
         xi = max(1, (t * (t - 1) * (t - 2)) / (M * (M - 1) * (M - 2)))
         return xi * self.tau_global
+
+    def get_sample(self):
+        """Return current sample of edges"""
+        return self.S
+
+    def get_triangle_estimate(self):
+        """Convenience method that returns the global estimate"""
+        return self.estimate_global()
