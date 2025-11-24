@@ -12,12 +12,7 @@ class TriestBase:
         self.tau_global = 0             # global triangle count estimator
         self.tau_local = defaultdict(int)
 
-    # ----------------------------------------------------------
-    # Utility functions
-    # ----------------------------------------------------------
-
     def normalize(self, u, v):
-        """Normalize edge to ensure consistent representation (u < v)"""
         return (u, v) if u < v else (v, u)
 
     def add_to_sample(self, edge):
@@ -32,36 +27,22 @@ class TriestBase:
         self.neighbors[u].remove(v)
         self.neighbors[v].remove(u)
 
-    # ----------------------------------------------------------
-    # Counter Updates
-    # ----------------------------------------------------------
-
     def update_counters(self, op, edge):
-        """
-        Update global and local triangle counters when an edge is added (+)
-        or removed (-) from the sample.
-        """
         u, v = edge
         shared = self.neighbors[u].intersection(self.neighbors[v])
 
         sign = +1 if op == "+" else -1
 
-        # Each triangle (u,v,c) should be counted exactly once
         for c in shared:
             self.tau_global += sign
             self.tau_local[u] += sign
             self.tau_local[v] += sign  
             self.tau_local[c] += sign
 
-    # ----------------------------------------------------------
-    # Reservoir Sampling Rule
-    # ----------------------------------------------------------
-
     def sample_edge(self, edge):
         if self.t <= self.M:
             return True  # always insert until reservoir is full
 
-        # keep edge w.p. M / t
         if random.random() < self.M / self.t:
             # Remove a random edge BEFORE adding the new one
             removed = random.choice(tuple(self.S))
@@ -74,10 +55,6 @@ class TriestBase:
 
         return False
 
-    # ----------------------------------------------------------
-    # Main API: process one edge (u,v)
-    # ----------------------------------------------------------
-
     def process_edge(self, edge):
         """
         Process new edge in the insertion-only stream.
@@ -88,13 +65,9 @@ class TriestBase:
         e = self.normalize(u, v)  # Using instance method
 
         if self.sample_edge(e):
-            self.add_to_sample(e)
             self.update_counters("+", e)
-
-    # ----------------------------------------------------------
-    # Return estimate
-    # ----------------------------------------------------------
-
+            self.add_to_sample(e)
+  
     def estimate_global(self):
         """
         Return unbiased estimate of number of triangles in the graph.
