@@ -1,15 +1,10 @@
 clear; clc; close all;
 
-% --- 1. SETTINGS ---
 filename = 'example1.dat';  
 k = 3;                     
 sigma = 1.0;              
 
-% --- 2. LOAD DATA ---
-% Check if the file exists first
 if isfile(filename)
-    % Load data into a matrix
-    % 'load' works for space-separated .dat files
     raw_data = load(filename);
 else
     fprintf('File not found. Generating dummy concentric circles...\n');

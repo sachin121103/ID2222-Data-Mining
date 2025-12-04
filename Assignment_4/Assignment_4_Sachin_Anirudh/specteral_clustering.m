@@ -1,6 +1,5 @@
 clear; clc; close all;
 
-% --- 1. SETTINGS ---
 filename = 'example1.dat';  
 k = 3;                     
 sigma = 1.0;              
