@@ -7,8 +7,7 @@ sigma = 1.0;
 if isfile(filename)
     raw_data = load(filename);
 else
-    fprintf('File not found. Generating dummy concentric circles...\n');
-    theta = linspace(0,2*pi, 200)';
+    fprintf('File not found...\n');
 end
 
 fprintf('Running Spectral Clustering...\n');
